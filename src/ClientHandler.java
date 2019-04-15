@@ -35,26 +35,55 @@ public class ClientHandler implements Runnable {
 			// send and receive data (implement concurrency)
 			if (input != null) {
 				
-				// print everything out
-				String s = input.readLine();
-				while (!s.equals("")) {
-					System.out.println(s);
-					s = input.readLine();
+				// add header information to httpHeader
+				String httpHeader = new String();
+				String temp = input.readLine();
+				while (!temp.equals("")) {
+					httpHeader += temp + "\n";
+					temp = input.readLine();
 				}
 				
-				System.out.println("GOT HERE");
-				output.println("HTTP/1.1 200 OK");
-				output.println("Server: Java HTTP Server from @shah06 : 1.0");
-				output.println("Date: " + new Date());
-				output.println();
-				output.flush();
 				
-				// write the file out
-				System.out.println("Estimated filesize: " + fis.available() + " bytes");
-				int available = fis.available();
-				byte[] bytes = new byte[available];
-				fis.read(bytes);
-				sos.write(bytes);
+				
+				// test to print out the requested filename
+				String[] headerLines = httpHeader.split("\\r?\\n");
+				// headerLines[0] contains the GET request
+				String getRequest = headerLines[0].substring(5, headerLines[0].lastIndexOf(" "));
+				System.out.println(getRequest);
+				// check for 404
+				try {
+					
+					fis = new FileInputStream(getRequest);
+					
+					output.println("HTTP/1.1 200 OK");
+					output.println("Server: Java HTTP Server from @shah06 : 1.0");
+					output.println("Date: " + new Date());
+					output.println();
+					output.flush();
+					
+					// write the file out
+					int available = fis.available();
+					byte[] bytes = new byte[available];
+					fis.read(bytes);
+					sos.write(bytes);
+					
+				} catch (FileNotFoundException fnfe) {
+					
+					fis = new FileInputStream("404.html");
+					
+					output.println("HTTP/1.1 404 Not Found");
+					output.println("Server: Java HTTP Server from @shah06 : 1.0");
+					output.println("Date: " + new Date());
+					output.println();
+					output.flush();
+					
+					// write the 404 file out
+					int available = fis.available();
+					byte[] bytes = new byte[available];
+					fis.read(bytes);
+					sos.write(bytes);
+					
+				}
 				
 			}
 			

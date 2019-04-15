@@ -9,10 +9,9 @@ public class HttpServer implements Runnable {
 	
 	public void run() {
 		try {
-			ss = new ServerSocket(8000);
+			ss = new ServerSocket(80);
 			while (true) {
 				// accept a client
-				System.out.println("listening for a socket");
 				Socket incoming = ss.accept();
 				
 				// handle a client
