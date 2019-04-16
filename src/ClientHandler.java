@@ -7,11 +7,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
+import java.util.HashMap;
 
 public class ClientHandler implements Runnable {
 
-	Socket socket;
-	FileInputStream fis;
+	private Socket socket;
+	private FileInputStream fis;
+	
+	private HashMap<String, String> parameters = new HashMap<String, String>();
 	
 	public ClientHandler (Socket socket, String filepath) {
 		this.socket = socket;
@@ -22,15 +25,21 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
+	public HashMap<String, String> getParameters() {
+		return parameters;
+	}
+	
 	public void run() {
-		if (null == fis) {
-			System.out.println("ERROR.... FILE NOT FOUND");
-			return;
-		}
+		
+		BufferedReader input = null;
+		PrintWriter output = null;
+		OutputStream sos = null;
 		try {
-			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			PrintWriter output = new PrintWriter(socket.getOutputStream());
-			OutputStream sos = socket.getOutputStream();
+			
+			// exception would be thrown here, if anywhere
+			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			output = new PrintWriter(socket.getOutputStream());
+			sos = socket.getOutputStream();
 			
 			// send and receive data (implement concurrency)
 			if (input != null) {
@@ -42,42 +51,46 @@ public class ClientHandler implements Runnable {
 					httpHeader += temp + "\n";
 					temp = input.readLine();
 				}
-				
-				
-				
 				// test to print out the requested filename
 				String[] headerLines = httpHeader.split("\\r?\\n");
 				// headerLines[0] contains the GET request
 				String getRequest = headerLines[0].substring(5, headerLines[0].lastIndexOf(" "));
-				System.out.println(getRequest);
-				// check for 404
+				// get request might have parameters, parse them out
+				if (getRequest.contains("?")) {
+					int qIndex = getRequest.indexOf("?");
+					String[] unparsedParams = getRequest.substring(qIndex+1).split("&");
+					for (String p : unparsedParams) {
+						String[] parts = p.split("=");
+						parameters.put(parts[0], parts[1]);
+					}
+					getRequest = getRequest.substring(0, qIndex);
+				}
+				
 				try {
 					
 					fis = new FileInputStream(getRequest);
 					
+					// http header for OK
 					output.println("HTTP/1.1 200 OK");
 					output.println("Server: Java HTTP Server from @shah06 : 1.0");
 					output.println("Date: " + new Date());
 					output.println();
 					output.flush();
 					
-					// write the file out
-					int available = fis.available();
-					byte[] bytes = new byte[available];
-					fis.read(bytes);
-					sos.write(bytes);
-					
 				} catch (FileNotFoundException fnfe) {
 					
 					fis = new FileInputStream("404.html");
 					
+					// http header for 404
 					output.println("HTTP/1.1 404 Not Found");
 					output.println("Server: Java HTTP Server from @shah06 : 1.0");
 					output.println("Date: " + new Date());
 					output.println();
 					output.flush();
 					
-					// write the 404 file out
+				} finally {
+					
+					// write the file out
 					int available = fis.available();
 					byte[] bytes = new byte[available];
 					fis.read(bytes);
@@ -86,14 +99,40 @@ public class ClientHandler implements Runnable {
 				}
 				
 			}
-			
-			// close
-			sos.close();
-			input.close();
-			output.close();
-			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			
+			// close everything
+			try {
+				if (null != sos) {
+					sos.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				if (null != input) {
+					input.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if (null != output) {
+				output.close();
+			}
+			
+			
+			try {
+				if (null != socket) {
+					socket.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	
