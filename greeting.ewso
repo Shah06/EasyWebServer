@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HELLO, Atharva_Shah</title>
+</head>
+<body>
+	<h1>Hello, Atharva_Shah</h1>
+	<hr>
+	<h3>Welcome to Easy Web Server</h3>
+	<p>Try changing the parameter "name" at the top of the URL bar.</p>
+	<br>
+	<footer>
+		<p><i>Version 0.1 Alpha</i></p>
+		<p>&copy;Atharva Shah 2019</p>
+	</footer>
+</body>
+</html>

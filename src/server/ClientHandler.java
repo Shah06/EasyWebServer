@@ -1,3 +1,4 @@
+package server;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,6 +10,8 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 
+import script.ScriptParser;
+
 public class ClientHandler implements Runnable {
 
 	private Socket socket;
@@ -19,6 +22,7 @@ public class ClientHandler implements Runnable {
 	public ClientHandler (Socket socket, String filepath) {
 		this.socket = socket;
 		try {
+			// check if file is EWS compliant
 			fis = new FileInputStream(filepath);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -52,6 +56,7 @@ public class ClientHandler implements Runnable {
 					temp = input.readLine();
 				}
 				// test to print out the requested filename
+				System.out.println(httpHeader);
 				String[] headerLines = httpHeader.split("\\r?\\n");
 				// headerLines[0] contains the GET request
 				String getRequest = headerLines[0].substring(5, headerLines[0].lastIndexOf(" "));
@@ -68,7 +73,13 @@ public class ClientHandler implements Runnable {
 				
 				try {
 					
-					fis = new FileInputStream(getRequest);
+					// check if the file is ewso
+					if (ScriptParser.isScript(getRequest)) {
+						System.out.println("true");
+						fis = new FileInputStream(new ScriptParser(getRequest, parameters).buildFile());
+					} else {
+						fis = new FileInputStream(getRequest);
+					}
 					
 					// http header for OK
 					output.println("HTTP/1.1 200 OK");
