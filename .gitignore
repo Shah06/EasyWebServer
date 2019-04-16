@@ -22,6 +22,9 @@ tomcat
 *.sar
 *.class
 
+#EWS generated files
+*.ewso
+
 # Maven 
 target/
 
