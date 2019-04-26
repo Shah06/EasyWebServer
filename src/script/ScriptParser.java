@@ -79,7 +79,12 @@ public class ScriptParser {
 				if (s.contains("<?start>")) {
 					// replace the name parameter with its value
 					String param = s.substring(s.indexOf("<?start>")+8, s.indexOf("<?end>"));
-					writer.println(s.substring(0, s.indexOf("<?start")) + params.get(param) + s.substring(s.indexOf("<?end>")+6));
+					if (params.containsKey(param)) {
+						String value = params.get(param).replaceAll("%20", " "); // removes spaces
+						writer.println(s.substring(0, s.indexOf("<?start")) + value + s.substring(s.indexOf("<?end>")+6));
+					} else {
+						writer.println(s.substring(0, s.indexOf("<?start")) + "NULL" + s.substring(s.indexOf("<?end>")+6));
+					}
 					writer.flush();
 				} else {
 					writer.println(s);

@@ -7,8 +7,8 @@
 <body>
 	<h1>Hello, <?start>name<?end></h1>
 	<hr>
-	<h3>Welcome to Easy Web Server</h3>
-	<p>Try changing the parameter "name" at the top of the URL bar.</p>
+	<h3><?start>message<?end></h3>
+	<p>Try changing/adding the parameter "name" and "message" at the top of the URL bar.</p>
 	<br>
 	<footer>
 		<p><i>Version 0.1 Alpha</i></p>
