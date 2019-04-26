@@ -17,6 +17,8 @@ public class ClientHandler implements Runnable {
 	private Socket socket;
 	private FileInputStream fis;
 	
+	private static final String DEFAULT_FILE = "test.html";
+	
 	private HashMap<String, String> parameters = new HashMap<String, String>();
 	
 	public ClientHandler (Socket socket, String filepath) {
@@ -72,6 +74,11 @@ public class ClientHandler implements Runnable {
 				}
 				
 				try {
+					
+					// if accessing root, use default file (usually index.html)
+					if (getRequest.equals("")) {
+						getRequest = DEFAULT_FILE;
+					}
 					
 					// check if the file is ewso
 					if (ScriptParser.isScript(getRequest)) {
