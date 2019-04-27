@@ -3,11 +3,11 @@ Easy Web Server is a simple web server written in Java, as a hobby project. Usag
 
 ### Known issues
 1. EWSO files aren't client independent; one EWSO file is generated which can cause conflicts when considering multiple clients.
-2. File streaming may cause issues with limited memory/high filesize environments
-`int available = fis.available();`
-`byte[] bytes = new byte[available];`
-`fis.read(bytes);`
-`sos.write(bytes);`
+2. File streaming may cause issues with limited memory/high filesize environments  
+`int available = fis.available();`  
+`byte[] bytes = new byte[available];`  
+`fis.read(bytes);`  
+`sos.write(bytes);`  
 
 ### Bucket List
 
