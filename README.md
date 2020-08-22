@@ -1,3 +1,6 @@
+# EasyWebServer is now DEPRECATED
+A newer, more powerful web server can be found at shah06/butler
+
 ## What is Easy Web Server?
 Easy Web Server is a simple web server written in Java, as a hobby project. Usage of Easy Web Server without permission is forbidden. Please contact atharvashah123 at gmail dot com for any inquiries regarding usage.
 
